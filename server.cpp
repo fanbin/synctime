@@ -54,56 +54,37 @@ bool finished;
     int received = 0;
     goodbye = false;
 
-    /* Create the TCP socket */
+    /* Create the UDP socket */
     if ((sock_1 = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     {
+        perror("cannot create socket");
         Die("Failed to create socket 1");
     }
-    //if ((sock_2 = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-    //{
-    //       Die("Failed to create socket 2");
-    //}
-
-    /* Construct the server sockaddr_in structure */
     memset(&clientaddr_1, 0, sizeof(clientaddr_1));       /* Clear struct */
     clientaddr_1.sin_family = AF_INET;                  /* Internet/IP */
     clientaddr_1.sin_addr.s_addr = inet_addr(CLIENT1);  /* IP address */
     clientaddr_1.sin_port = htons(atoi(PORT1));       /* server port */
 
-    /* Construct the server sockaddr_in structure */
-    //memset(&clientaddr_2, 0, sizeof(clientaddr_2));       /* Clear struct */
-    //clientaddr_2.sin_family = AF_INET;                  /* Internet/IP */
-    //clientaddr_2.sin_addr.s_addr = inet_addr(CLIENT2);  /* IP address */
-    //clientaddr_2.sin_port = htons(atoi(PORT2));       /* server port */
-
     /* Establish connection */
     if (connect(sock_1,(struct sockaddr *) &clientaddr_1,sizeof(clientaddr_1)) < 0)
     {
+        perror("cannot connect to client");
         Die("Failed to connect to the client 1");
     }
-    //if (connect(sock_2,(struct sockaddr *) &clientaddr_2,sizeof(clientaddr_2)) < 0)
-    //{
-    //    Die("Failed to connect to the client 2");
-    //}
+ 
 
     if ( pthread_create( &ClientThread_1, NULL, ThreadFunc, &sock_1) ) {
         Die("error in creating thread.");
     }
-    //if ( pthread_create( &ClientThread_2, NULL, ThreadFunc, &sock_2) ) {
-    //    Die("error in creating thread.");
-    //}
+    
+   
+  
     struct timeval tv;
     string command;
 
     time_t now = time(NULL);    
     struct tm *tm_struct=localtime(&now);
 
-    //while (tm_struct->tm_hour <16 )
-    //{
-    //		sleep(60);
-    //		now=time(NULL);
-    // 	tm_struct=localtime(&now);
-    //}	
     cerr<<"sync-server: sync time at "<<tm_struct->tm_hour<<":"<<tm_struct->tm_min<<endl;
     goodbye=true;
     void *status;
